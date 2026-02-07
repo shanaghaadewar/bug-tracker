@@ -3,10 +3,6 @@ pipeline {
 
     stages {
         stage('Unit Tests - Backend') {
-            withEnv([
-                "GOCACHE=${env.WORKSPACE}/.gocache",
-                "GOMODCACHE=${env.WORKSPACE}/.gomodcache"
-            ])
             agent {
                 docker {
                     image 'snakee/golang-junit:1.21'
@@ -15,9 +11,13 @@ pipeline {
             }
             steps {
                 dir('bugtracker-backend') {
-                    sh 'go test -v ./...'
+                    withEnv([
+                        "GOCACHE=${env.WORKSPACE}/.gocache",
+                        "GOMODCACHE=${env.WORKSPACE}/.gomodcache"
+                    ]) {
+                        sh 'go test -v ./...'
+                    }
                 }
-            
             }
         }
     }
